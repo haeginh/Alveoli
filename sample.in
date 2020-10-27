@@ -1,0 +1,6 @@
+/run/numberOfThreads  1
+/run/initialize
+
+/gun/particle gamma
+/gun/energy 0.01 MeV
+/run/beamOn 100
