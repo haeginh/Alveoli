@@ -162,7 +162,6 @@ void RunAction::PrintAResultLine(std::ostream &out)
     G4double varianceL    = ((squareDoeseL/numOfEvent) - (meanDoseL*meanDoseL))/numOfEvent;
     G4double relativeEL   = sqrt(varianceL)/meanDoseL;
 
-    out << fRun->GetRunID() <<"\t"<< fRun->GetParticleName() << "\t" << fRun->GetParticleEnergy() << "\t"<< numOfEvent<<"\t"
-        << meanDose/targetMass/(joule/kg) << "\t" <<meanDose/fRun->GetParticleEnergy()<<"\t"<< relativeE << "\t"
+    out << meanDose/targetMass/(joule/kg) << "\t" <<meanDose/fRun->GetParticleEnergy()<<"\t"<< relativeE << "\t"
         << meanDoseL/targetMassL/(joule/kg) << "\t" <<meanDoseL/fRun->GetParticleEnergy()<<"\t"<< relativeEL << G4endl;
 }
