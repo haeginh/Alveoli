@@ -31,7 +31,7 @@
 #include "../include/Run.hh"
 
 Run::Run()
-:G4Run(), edep(0), edep2(0)
+:G4Run(), edep(0), edep2(0), edepL(0), edep2L(0)
 {
 	fCollID
     = G4SDManager::GetSDMpointer()->GetCollectionID("MFD/eDep");
@@ -56,6 +56,10 @@ void Run::RecordEvent(const G4Event* event)
         edep += *doseMap[1];
         edep2 += (*doseMap[1])*(*doseMap[1]);
     }
+    if(doseMap.find(2)!=doseMap.end()){
+        edepL += *doseMap[2];
+        edep2L += (*doseMap[2])*(*doseMap[2]);
+    }
 
     return;
 }
@@ -64,8 +68,10 @@ void Run::Merge(const G4Run* run)
 {
 	const Run* localRun = static_cast<const Run*>(run);
 	// merge the data from each thread
-    edep = localRun->edep;
-    edep2 = localRun->edep2;
+    edep += localRun->edep;
+    edep2 += localRun->edep2;
+    edepL += localRun->edepL;
+    edep2L += localRun->edep2L;
 
 	primary = localRun->primary;
 	primaryE = localRun->primaryE;

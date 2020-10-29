@@ -45,7 +45,7 @@ RunAction::RunAction(G4String _output, G4Timer* _init)
 	std::ofstream ofs(outputFile);
 
     //massMap will be initialized for negative IDs (RBM and BS) in the for loop
-    ofs<<"runID\tparticle\tenergy\tnps\tinitT\trunT\tdose[Gy]\tAF\terr"<<G4endl;
+    ofs<<"runID\tparticle\tenergy\tnps\tinitT\trunT\tdose [Gy]\tAF\terr\tlumen dose [Gy]\tAF\terr"<<G4endl;
 	ofs.close();
 }
 
@@ -95,6 +95,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
             dynamic_cast<const DetectorConstruction*>(G4RunManager::GetRunManager()
             ->GetUserDetectorConstruction());
     targetMass = det->GetTargetMass();
+    targetMassL = det->GetTargetMassL();
 
 	// print by G4cout
     PrintResult(G4cout);
@@ -126,8 +127,16 @@ void RunAction::PrintResult(std::ostream &out)
     G4double squareDoese = fRun->GetEdep2();
     G4double variance    = ((squareDoese/numOfEvent) - (meanDose*meanDose))/numOfEvent;
     G4double relativeE   = sqrt(variance)/meanDose;
-    out << setw(15) << "edep : " << meanDose/targetMass/(joule/kg) <<" Gy (err. "<<relativeE<<")"<<G4endl;
-    out << setw(15) << "AF   : " << meanDose/fRun->GetParticleEnergy() <<G4endl;
+
+    G4double meanDoseL    = fRun->GetEdepL() / numOfEvent;
+    G4double squareDoeseL = fRun->GetEdep2L();
+    G4double varianceL    = ((squareDoeseL/numOfEvent) - (meanDoseL*meanDoseL))/numOfEvent;
+    G4double relativeEL   = sqrt(varianceL)/meanDoseL;
+
+    out << setw(15) << "edep (target) : " << meanDose/targetMass/(joule/kg) <<" Gy (err. "<<relativeE<<")"<<G4endl;
+    out << setw(15) << "AF   (target) : " << meanDose/fRun->GetParticleEnergy() <<G4endl;
+    out << setw(15) << "edep (lumen)  : " << meanDoseL/targetMassL/(joule/kg) <<" Gy (err. "<<relativeEL<<")"<<G4endl;
+    out << setw(15) << "AF   (lumen)  : " << meanDoseL/fRun->GetParticleEnergy() <<G4endl;
     out << "=======================================================================" << G4endl << G4endl;
 }
 
@@ -148,5 +157,12 @@ void RunAction::PrintAResultLine(std::ostream &out)
     G4double variance    = ((squareDoese/numOfEvent) - (meanDose*meanDose))/numOfEvent;
     G4double relativeE   = sqrt(variance)/meanDose;
 
-    out << setw(15) << meanDose/targetMass/(joule/kg) << "\t" <<meanDose/fRun->GetParticleEnergy()<<"\t"<< relativeE << G4endl;
+    G4double meanDoseL    = fRun->GetEdepL() / numOfEvent;
+    G4double squareDoeseL = fRun->GetEdep2L();
+    G4double varianceL    = ((squareDoeseL/numOfEvent) - (meanDoseL*meanDoseL))/numOfEvent;
+    G4double relativeEL   = sqrt(varianceL)/meanDoseL;
+
+    out << fRun->GetRunID() <<"\t"<< fRun->GetParticleName() << "\t" << fRun->GetParticleEnergy() << "\t"<< numOfEvent<<"\t"
+        << meanDose/targetMass/(joule/kg) << "\t" <<meanDose/fRun->GetParticleEnergy()<<"\t"<< relativeE << "\t"
+        << meanDoseL/targetMassL/(joule/kg) << "\t" <<meanDoseL/fRun->GetParticleEnergy()<<"\t"<< relativeEL << G4endl;
 }

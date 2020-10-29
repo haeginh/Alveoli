@@ -56,7 +56,8 @@ public:
 
 	virtual G4VPhysicalVolume* Construct();
 	virtual void ConstructSDandField();
-    G4double GetTargetMass() const {return targetMass;}
+    G4double GetTargetMass() const {return targetVol*tissue->GetDensity();}
+    G4double GetTargetMassL() const {return targetVolL*water->GetDensity();}
 
 private:
     G4ThreeVector ReadAlveoli(G4String fileN);
@@ -65,7 +66,7 @@ private:
     G4Material*      tissue;
     G4Material*      water;
     G4String         alveoliN;
-    G4double         targetMass;
+    G4double         targetVol, targetVolL;
     std::vector<G4LogicalVolume*> logicalV;
 };
 

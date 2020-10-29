@@ -57,9 +57,12 @@ public:
 
     G4double GetEdep()  {return edep; }
     G4double GetEdep2() {return edep2;}
+    G4double GetEdepL()  {return edepL; }
+    G4double GetEdep2L() {return edep2L;}
 
 private:
     G4double edep, edep2;
+    G4double edepL, edep2L;
     G4int    fCollID;
     G4String primary;
     G4double primaryE;

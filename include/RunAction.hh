@@ -66,7 +66,7 @@ private:
     G4String     outputFile;
     G4Timer*     initTimer;
     G4Timer*     runTimer;
-    G4double     targetMass;
+    G4double     targetMass, targetMassL;
 };
 
 #endif

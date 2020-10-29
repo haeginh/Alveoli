@@ -35,7 +35,7 @@
 #include "G4PSEnergyDeposit.hh"
 
 DetectorConstruction::DetectorConstruction(G4String _alveoliN)
-:worldLogical(0), tissue(0), water(0), alveoliN(_alveoliN), targetMass(0)
+:worldLogical(0), tissue(0), water(0), alveoliN(_alveoliN), targetVol(0)
 {
     tissue = G4NistManager::Instance()->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRP");
     water  = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
@@ -66,7 +66,8 @@ G4ThreeVector DetectorConstruction::ReadAlveoli(G4String fileN){
     G4VisAttributes* outer_vis = new G4VisAttributes(G4Colour(255,0,0,0.5));
     G4VisAttributes* inner_vis = new G4VisAttributes(G4Colour(255,255,255,0.5));
     ifs>>number;
-    targetMass = 0;
+    targetVol = 0;
+    targetVolL = 0;
     for(G4int i=0;i<number;i++){
         ifs>>center>>r0>>r1;
         G4LogicalVolume* outer_l = new G4LogicalVolume(new G4Orb(std::to_string(i)+"_outerSol",(r0*0.5+r1)*um),
@@ -80,14 +81,16 @@ G4ThreeVector DetectorConstruction::ReadAlveoli(G4String fileN){
         inner_l->SetVisAttributes(inner_vis);
 
         logicalV.push_back(outer_l);
+        logicalV.push_back(inner_l);
         if(maxDim.getX()>std::fabs(center.getX())) maxDim.setX(std::fabs(center.getX()));
         if(maxDim.getY()>std::fabs(center.getY())) maxDim.setY(std::fabs(center.getY()));
         if(maxDim.getZ()>std::fabs(center.getZ())) maxDim.setZ(std::fabs(center.getZ()));
         maxR = (r0*0.5+r1)*um>maxR? (r0*0.5+r1)*um:maxR;
-        targetMass += outer_l->GetSolid()->GetCubicVolume()-inner_l->GetSolid()->GetCubicVolume();
+        targetVol += outer_l->GetSolid()->GetCubicVolume()-inner_l->GetSolid()->GetCubicVolume();
+        targetVolL += inner_l->GetSolid()->GetCubicVolume();
     }
     ifs.close();
-    G4cout<<"Read "+fileN+"..."<<number<<" spheres ("<<targetMass/mg<<" mg)"<<G4endl;
+    G4cout<<"Read "+fileN+"..."<<number<<" spheres ("<<targetVol/mm3<<" mm3)"<<G4endl;
     return maxDim + G4ThreeVector(maxR+1*mm, maxR+1*mm, maxR+1*mm);
 }
 
